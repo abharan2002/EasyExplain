@@ -145,29 +145,29 @@ function App() {
         </div>
 
         {/* Studio Workspace */}
-        <div className="flex-1 p-10 flex flex-col min-h-0 bg-[#020202]">
+        <div className="flex-1 p-6 flex flex-col min-h-0 bg-[#020202]">
             {!file ? (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex items-center justify-center">
-                    <label className="group relative flex flex-col items-center justify-center w-full max-w-4xl h-[500px] border-2 border-dashed border-zinc-800 rounded-[48px] bg-zinc-950/50 hover:bg-zinc-900/50 hover:border-blue-500/30 transition-all cursor-pointer">
+                    <label className="group relative flex flex-col items-center justify-center w-full max-w-4xl h-[400px] border-2 border-dashed border-zinc-800 rounded-[48px] bg-zinc-950/50 hover:bg-zinc-900/50 hover:border-blue-500/30 transition-all cursor-pointer">
                         <input type="file" accept="video/*" onChange={handleFileUpload} className="hidden" />
                         
-                        <div className="w-32 h-32 rounded-[32px] bg-zinc-900 border border-white/5 flex items-center justify-center mb-10 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-500 shadow-2xl">
+                        <div className="w-24 h-24 rounded-[32px] bg-zinc-900 border border-white/5 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-500 shadow-2xl">
                             {isUploading ? (
-                                <Loader2 className="animate-spin text-white w-10 h-10" />
+                                <Loader2 className="animate-spin text-white w-8 h-8" />
                             ) : (
-                                <Upload className="text-zinc-600 group-hover:text-white w-10 h-10 transition-colors" />
+                                <Upload className="text-zinc-600 group-hover:text-white w-8 h-8 transition-colors" />
                             )}
                         </div>
                         
-                        <h3 className="text-3xl font-black text-white tracking-tighter mb-4">Initialize Project</h3>
-                        <p className="text-zinc-500 font-medium max-w-sm text-center leading-relaxed">
+                        <h3 className="text-2xl font-black text-white tracking-tighter mb-4">Initialize Project</h3>
+                        <p className="text-zinc-500 font-medium max-w-sm text-center leading-relaxed text-sm">
                             Upload high-fidelity footage to start annotating. Supported formats: MP4, MOV, WebM.
                         </p>
                     </label>
                 </motion.div>
             ) : (
-                <div className="flex-1 flex flex-col min-h-0 gap-10">
-                    <div className="flex-1 min-h-0 rounded-[48px] overflow-hidden shadow-[0_80px_160px_rgba(0,0,0,0.9)] border border-white/5 bg-black ring-1 ring-white/10">
+                <div className="flex-1 flex flex-col min-h-0 gap-6">
+                    <div className="flex-1 flex flex-col min-h-0 rounded-[40px] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.8)] border border-white/5 bg-black ring-1 ring-white/10">
                         <VideoEditor
                             file={file} metadata={metadata}
                             onMetadataLoaded={(m) => setMetadata({...metadata!, ...m})}
@@ -185,7 +185,7 @@ function App() {
                     <motion.div 
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        className="h-64 bg-zinc-950 rounded-[40px] border border-white/[0.05] overflow-hidden shadow-2xl"
+                        className="h-56 bg-zinc-950 rounded-[32px] border border-white/[0.05] overflow-hidden shadow-2xl"
                     >
                         <Timeline 
                             duration={metadata?.duration || 100}

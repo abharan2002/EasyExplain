@@ -179,7 +179,7 @@ export const VideoEditor: React.FC<Props> = ({
     <Tooltip.Provider>
     <div 
         ref={containerRef}
-        className="flex-1 relative flex items-center justify-center overflow-hidden bg-black group/editor selection:none"
+        className="h-full w-full relative flex items-center justify-center overflow-hidden bg-black group/editor selection:none"
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setIsHovering(false)}
         onClick={handleOverlayClick}
@@ -189,7 +189,7 @@ export const VideoEditor: React.FC<Props> = ({
           <video
             ref={videoRef}
             src={objectUrl}
-            className="max-h-full max-w-full object-contain pointer-events-none transition-transform duration-700"
+            className="w-full h-full object-contain pointer-events-none transition-transform duration-700"
             onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime || 0)}
             onLoadedMetadata={handleLoadedMetadata}
             muted={isMuted}
