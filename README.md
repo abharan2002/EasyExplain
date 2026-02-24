@@ -2,8 +2,6 @@
 
 **EasyExplain** is a premium, high-fidelity video annotation studio designed to create professional instructional content with ease. Featuring a world-class "dark mode" interface, cinematic controls, and an intelligent timeline, it allows creators to overlay precise markers and instructions onto footage in minutes.
 
-![Redesign Preview](https://via.placeholder.com/1200x600/020202/FFFFFF?text=EasyExplain+Studio+Interface)
-
 ## ✨ Features
 
 - **Professional Studio UI:** A sleek, high-end dark interface built with Radix UI and Framer Motion.
