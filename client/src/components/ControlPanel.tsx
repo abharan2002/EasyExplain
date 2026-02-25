@@ -24,6 +24,14 @@ interface Props {
   setCurrentTextColor: (c: string) => void;
   currentSize: number;
   setCurrentSize: (n: number) => void;
+  currentTextSize: number;
+  setCurrentTextSize: (n: number) => void;
+  currentFontWeight: string;
+  setCurrentFontWeight: (s: string) => void;
+  currentFontStyle: string;
+  setCurrentFontStyle: (s: string) => void;
+  currentFontFamily: string;
+  setCurrentFontFamily: (s: string) => void;
   currentDuration: number;
   setCurrentDuration: (n: number) => void;
   labelAlwaysVisible: boolean;
@@ -55,6 +63,10 @@ export const ControlPanel: React.FC<Props> = ({
   currentColor, setCurrentColor,
   currentTextColor, setCurrentTextColor,
   currentSize, setCurrentSize,
+  currentTextSize, setCurrentTextSize,
+  currentFontWeight, setCurrentFontWeight,
+  currentFontStyle, setCurrentFontStyle,
+  currentFontFamily, setCurrentFontFamily,
   currentDuration, setCurrentDuration,
   labelAlwaysVisible, setLabelAlwaysVisible,
   onUndo, onClear, onExport, isExporting,
@@ -272,6 +284,73 @@ export const ControlPanel: React.FC<Props> = ({
                       className="w-full h-12 rounded-xl bg-zinc-900 border border-white/5 cursor-pointer p-1.5"
                     />
                   </div>
+                </div>
+              </div>
+            </ControlSection>
+
+            <ControlSection title="Typography" icon={Type}>
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end px-1">
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Text Size</span>
+                    <span className="text-[12px] font-mono font-bold text-blue-400">{currentTextSize}px</span>
+                  </div>
+                  <Slider.Root 
+                    className="relative flex items-center select-none touch-none w-full h-5"
+                    value={[currentTextSize]}
+                    max={48}
+                    min={8}
+                    step={1}
+                    onValueChange={([val]) => setCurrentTextSize(val)}
+                  >
+                    <Slider.Track className="bg-zinc-800 relative grow rounded-full h-[4px]">
+                      <Slider.Range className="absolute bg-blue-600 rounded-full h-full" />
+                    </Slider.Track>
+                    <Slider.Thumb className="block w-4 h-4 bg-white shadow-xl rounded-full hover:scale-125 transition-transform focus:outline-none ring-4 ring-blue-500/20" />
+                  </Slider.Root>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider pl-1">Weight</label>
+                    <select 
+                      value={currentFontWeight}
+                      onChange={(e) => setCurrentFontWeight(e.target.value)}
+                      className="w-full bg-zinc-900 border border-white/5 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="400">Normal</option>
+                      <option value="500">Medium</option>
+                      <option value="600">SemiBold</option>
+                      <option value="700">Bold</option>
+                      <option value="900">Black</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider pl-1">Style</label>
+                    <select 
+                      value={currentFontStyle}
+                      onChange={(e) => setCurrentFontStyle(e.target.value)}
+                      className="w-full bg-zinc-900 border border-white/5 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="normal">Normal</option>
+                      <option value="italic">Italic</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider pl-1">Font Family</label>
+                  <select 
+                    value={currentFontFamily}
+                    onChange={(e) => setCurrentFontFamily(e.target.value)}
+                    className="w-full bg-zinc-900 border border-white/5 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="Inter, sans-serif">Inter</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                    <option value="serif">Serif</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                  </select>
                 </div>
               </div>
             </ControlSection>

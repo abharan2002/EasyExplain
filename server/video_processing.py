@@ -40,56 +40,60 @@ def draw_annotation(frame: np.ndarray, ann: Dict, active_rank: int):
     text_color = _hex_to_bgr(ann.get("text_color", "#ffffff"))
     
     size = int(ann.get("marker_size", 16))
-    
+    radius = size // 2
+    text_size_px = int(ann.get("text_size", 16))
+    font_weight = str(ann.get("font_weight", "700"))
+    thickness = 2 if int(font_weight) >= 600 else 1
+    font_scale = text_size_px / 22.0 # Approximation for HERSHEY_SIMPLEX
+
     # Draw Marker
     if marker_type == "arrow":
-        start_pt = (max(0, x - size * 3), max(0, y - size * 2))
-        cv2.arrowedLine(frame, start_pt, (x, y), color, 3, cv2.LINE_AA, tipLength=0.2)
-        cv2.circle(frame, (x, y), 5, color, -1, cv2.LINE_AA)
+        start_pt = (max(0, x - size * 2), max(0, y - size * 2))
+        cv2.arrowedLine(frame, start_pt, (x, y), color, 3, cv2.LINE_AA, tipLength=0.3)
     elif marker_type == "pin":
-        cv2.drawMarker(frame, (x, y), color, cv2.MARKER_DIAMOND, size * 2, 2)
-        cv2.circle(frame, (x, y), 4, (255, 255, 255), -1, cv2.LINE_AA)
+        cv2.circle(frame, (x, y - radius), radius, color, -1, cv2.LINE_AA)
+        cv2.drawMarker(frame, (x, y), color, cv2.MARKER_TILTED_CROSS, radius, 2)
     else:  # dot
-        cv2.circle(frame, (x, y), size, color, 2, cv2.LINE_AA)
-        cv2.circle(frame, (x, y), max(4, int(size * 0.3)), (255, 255, 255), -1, cv2.LINE_AA)
+        # White border
+        cv2.circle(frame, (x, y), radius + 2, (255, 255, 255), -1, cv2.LINE_AA)
+        # Colored center
+        cv2.circle(frame, (x, y), radius, color, -1, cv2.LINE_AA)
 
     # Draw Text
     wrapped_text = textwrap.shorten(text, width=60, placeholder="...")
+    (tw, th), _ = cv2.getTextSize(wrapped_text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)
     
     # Calculate adaptive background color based on text color luminance
-    # text_color is (B, G, R)
     lum = (0.299 * text_color[2] + 0.587 * text_color[1] + 0.114 * text_color[0]) / 255
     is_dark_text = lum < 0.5
+    bg_color = (245, 245, 245) if is_dark_text else (15, 15, 15)
     
     if text_style == "headline":
         # Cinematic lower-third style
-        y_base = h - 60 - (active_rank * 50)
-        bg_color = (245, 245, 245) if is_dark_text else (10, 10, 10)
-        _blend_rect(frame, 20, y_base - 30, w // 2, y_base + 10, bg_color, 0.7)
-        cv2.rectangle(frame, (20, y_base - 30), (24, y_base + 10), color, -1) # Accent bar
-        cv2.putText(frame, wrapped_text, (34, y_base), cv2.FONT_HERSHEY_SIMPLEX, 0.8, text_color, 2, cv2.LINE_AA)
+        y_base = h - 100 - (active_rank * 60)
+        _blend_rect(frame, 40, y_base - th - 20, 40 + tw + 40, y_base + 20, bg_color, 0.8)
+        cv2.rectangle(frame, (40, y_base - th - 20), (46, y_base + 20), color, -1) # Side accent
+        cv2.putText(frame, wrapped_text, (60, y_base), cv2.FONT_HERSHEY_SIMPLEX, font_scale * 1.5, text_color, thickness + 1, cv2.LINE_AA)
 
     elif text_style == "callout":
         # Box with line to marker
-        box_w, box_h = 240, 60
+        box_w, box_h = int(tw + 40), int(th + 40)
         bx = max(20, min(w - box_w - 20, x + 40))
-        by = max(20, min(h - box_h - 20, y - 40))
+        by = max(20, min(h - box_h - 20, y - 60))
         
-        bg_color = (240, 240, 240) if is_dark_text else (20, 20, 20)
-        _blend_rect(frame, bx, by, bx + box_w, by + box_h, bg_color, 0.8)
+        _blend_rect(frame, bx, by, bx + box_w, by + box_h, bg_color, 0.9)
         cv2.rectangle(frame, (bx, by), (bx + box_w, by + box_h), color, 2)
-        cv2.line(frame, (bx, by + box_h // 2), (x, y), color, 2, cv2.LINE_AA)
+        cv2.line(frame, (bx, by + box_h), (x, y), color, 2, cv2.LINE_AA)
         
-        cv2.putText(frame, wrapped_text, (bx + 10, by + 35), cv2.FONT_HERSHEY_SIMPLEX, 0.6, text_color, 1, cv2.LINE_AA)
+        cv2.putText(frame, wrapped_text, (bx + 20, by + th + 20), cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_color, thickness, cv2.LINE_AA)
 
     else: # label (floating near marker)
-        (tw, th), _ = cv2.getTextSize(wrapped_text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)
-        tx = max(10, min(w - tw - 10, x + size + 10))
-        ty = max(th + 10, min(h - 10, y))
+        tx = max(10, min(w - tw - 40, x + radius + 20))
+        ty = max(th + 20, min(h - 20, y + th // 2))
         
-        bg_color = (245, 245, 245) if is_dark_text else (10, 10, 10)
-        _blend_rect(frame, tx - 5, ty - th - 5, tx + tw + 5, ty + 5, bg_color, 0.7)
-        cv2.putText(frame, wrapped_text, (tx, ty), cv2.FONT_HERSHEY_SIMPLEX, 0.7, text_color, 2, cv2.LINE_AA)
+        _blend_rect(frame, tx - 15, ty - th - 15, tx + tw + 15, ty + 15, bg_color, 0.8)
+        cv2.rectangle(frame, (tx - 15, ty - th - 15), (tx - 11, ty + 15), color, -1) # Side accent
+        cv2.putText(frame, wrapped_text, (tx, ty), cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_color, thickness, cv2.LINE_AA)
 
 def render_video(input_path: str, output_path: str, annotations: List[Dict], keep_audio: bool = True):
     cap = cv2.VideoCapture(input_path)

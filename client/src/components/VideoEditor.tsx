@@ -23,6 +23,10 @@ interface Props {
   currentColor: string;
   currentTextColor: string;
   currentSize: number;
+  currentTextSize: number;
+  currentFontWeight: string;
+  currentFontStyle: string;
+  currentFontFamily: string;
   currentDuration: number;
   labelAlwaysVisible: boolean;
 }
@@ -44,6 +48,10 @@ export const VideoEditor: React.FC<Props> = ({
   currentColor,
   currentTextColor,
   currentSize,
+  currentTextSize,
+  currentFontWeight,
+  currentFontStyle,
+  currentFontFamily,
   currentDuration,
   labelAlwaysVisible
 }) => {
@@ -165,6 +173,10 @@ export const VideoEditor: React.FC<Props> = ({
         color: currentColor,
         text_color: currentTextColor,
         marker_size: currentSize,
+        text_size: currentTextSize,
+        font_weight: currentFontWeight,
+        font_style: currentFontStyle,
+        font_family: currentFontFamily,
         label_always_visible: labelAlwaysVisible
     };
     setAnnotations([...annotations, newAnn]);
@@ -181,7 +193,8 @@ export const VideoEditor: React.FC<Props> = ({
         ref={containerRef}
         className="h-full w-full relative flex items-center justify-center overflow-hidden bg-black group/editor selection:none"
         onMouseMove={handleMouseMove}
-        onMouseLeave={() => setIsHovering(false)}
+        onMouseLeave={() => { setIsHovering(false); setDraggingId(null); }}
+        onMouseUp={() => setDraggingId(null)}
         onClick={handleOverlayClick}
         style={{ cursor: draggingId ? 'grabbing' : markerMode ? 'crosshair' : 'default' }}
     >
@@ -243,25 +256,105 @@ export const VideoEditor: React.FC<Props> = ({
                                 {/* Label Component */}
                                 <AnimatePresence>
                                     {(ann.label_always_visible || draggingId === ann.id || isHovering) && (
-                                        <motion.div 
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            className="absolute left-full ml-4 top-1/2 -translate-y-1/2"
-                                        >
-                                            <div 
-                                                className="backdrop-blur-2xl border border-white/10 px-5 py-3 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] whitespace-nowrap"
-                                                style={{ 
-                                                    backgroundColor: 'rgba(9,9,11,0.85)',
-                                                    color: ann.text_color,
-                                                    borderLeft: `4px solid ${ann.color}`
-                                                }}
-                                            >
-                                                <div className="text-[13px] font-bold tracking-tight">{ann.text}</div>
-                                            </div>
-                                        </motion.div>
+                                        <>
+                                            {ann.text_style === 'label' && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    className="absolute left-full ml-4 top-1/2 -translate-y-1/2"
+                                                >
+                                                    <div 
+                                                        className="backdrop-blur-2xl border border-white/10 px-5 py-3 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] whitespace-nowrap"
+                                                        style={{ 
+                                                            backgroundColor: 'rgba(9,9,11,0.85)',
+                                                            color: ann.text_color,
+                                                            borderLeft: `4px solid ${ann.color}`
+                                                        }}
+                                                    >
+                                                        <div 
+                                                            className="tracking-tight"
+                                                            style={{ 
+                                                                fontSize: `${ann.text_size}px`,
+                                                                fontWeight: ann.font_weight,
+                                                                fontStyle: ann.font_style,
+                                                                fontFamily: ann.font_family
+                                                            }}
+                                                        >
+                                                            {ann.text}
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {ann.text_style === 'callout' && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    className="absolute"
+                                                    style={{ left: 40, bottom: 40 }}
+                                                >
+                                                    <div className="relative">
+                                                        {/* Connecting Line */}
+                                                        <div 
+                                                            className="absolute bottom-0 left-0 w-10 h-10 border-l-2 border-b-2 -translate-x-full translate-y-full"
+                                                            style={{ borderColor: ann.color, borderBottomLeftRadius: '12px' }}
+                                                        />
+                                                        <div 
+                                                            className="backdrop-blur-2xl border-2 px-6 py-4 rounded-2xl shadow-2xl min-w-[200px]"
+                                                            style={{ 
+                                                                backgroundColor: 'rgba(9,9,11,0.9)',
+                                                                color: ann.text_color,
+                                                                borderColor: ann.color
+                                                            }}
+                                                        >
+                                                            <div 
+                                                                style={{ 
+                                                                    fontSize: `${ann.text_size}px`,
+                                                                    fontWeight: ann.font_weight,
+                                                                    fontStyle: ann.font_style,
+                                                                    fontFamily: ann.font_family
+                                                                }}
+                                                            >
+                                                                {ann.text}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </>
                                     )}
                                 </AnimatePresence>
                             </div>
+
+                            {/* Headline style is rendered outside the marker group for absolute bottom positioning */}
+                            <AnimatePresence>
+                                {ann.text_style === 'headline' && (ann.label_always_visible || isHovering) && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="fixed bottom-32 left-10 z-[60]"
+                                        style={{ width: overlayRect.width / 2 }}
+                                    >
+                                        <div 
+                                            className="backdrop-blur-3xl border border-white/10 px-8 py-6 rounded-3xl shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden"
+                                            style={{ backgroundColor: 'rgba(9,9,11,0.8)' }}
+                                        >
+                                            <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: ann.color }} />
+                                            <div 
+                                                style={{ 
+                                                    color: ann.text_color,
+                                                    fontSize: `${ann.text_size * 1.5}px`,
+                                                    fontWeight: ann.font_weight,
+                                                    fontStyle: ann.font_style,
+                                                    fontFamily: ann.font_family
+                                                }}
+                                            >
+                                                {ann.text}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </motion.div>
                     );
                 })}

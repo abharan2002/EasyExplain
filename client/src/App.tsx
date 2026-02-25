@@ -22,12 +22,29 @@ function App() {
   const [currentColor, setCurrentColor] = useState('#3b82f6');
   const [currentTextColor, setCurrentTextColor] = useState('#ffffff');
   const [currentSize, setCurrentSize] = useState(16);
+  const [currentTextSize, setCurrentTextSize] = useState(13);
+  const [currentFontWeight, setCurrentFontWeight] = useState('700');
+  const [currentFontStyle, setCurrentFontStyle] = useState('normal');
+  const [currentFontFamily, setCurrentFontFamily] = useState('Inter, sans-serif');
   const [currentDuration, setCurrentDuration] = useState(3);
   const [labelAlwaysVisible, setLabelAlwaysVisible] = useState(true);
   
   const [isUploading, setIsUploading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
+
+  const handleUndo = () => setAnnotations(prev => prev.slice(0, -1));
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        handleUndo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -103,10 +120,14 @@ function App() {
             currentColor={currentColor} setCurrentColor={setCurrentColor}
             currentTextColor={currentTextColor} setCurrentTextColor={setCurrentTextColor}
             currentSize={currentSize} setCurrentSize={setCurrentSize}
+            currentTextSize={currentTextSize} setCurrentTextSize={setCurrentTextSize}
+            currentFontWeight={currentFontWeight} setCurrentFontWeight={setCurrentFontWeight}
+            currentFontStyle={currentFontStyle} setCurrentFontStyle={setCurrentFontStyle}
+            currentFontFamily={currentFontFamily} setCurrentFontFamily={setCurrentFontFamily}
             currentDuration={currentDuration} setCurrentDuration={setCurrentDuration}
             labelAlwaysVisible={labelAlwaysVisible} setLabelAlwaysVisible={setLabelAlwaysVisible}
             annotations={annotations}
-            onUndo={() => setAnnotations(prev => prev.slice(0, -1))}
+            onUndo={handleUndo}
             onClear={() => setAnnotations([])}
             onExport={handleExport}
             isExporting={isExporting}
@@ -177,7 +198,12 @@ function App() {
                             markerMode={true} currentText={currentText}
                             currentType={currentType} currentStyle={currentStyle}
                             currentColor={currentColor} currentTextColor={currentTextColor}
-                            currentSize={currentSize} currentDuration={currentDuration}
+                            currentSize={currentSize} 
+                            currentTextSize={currentTextSize}
+                            currentFontWeight={currentFontWeight}
+                            currentFontStyle={currentFontStyle}
+                            currentFontFamily={currentFontFamily}
+                            currentDuration={currentDuration}
                             labelAlwaysVisible={labelAlwaysVisible}
                         />
                     </div>

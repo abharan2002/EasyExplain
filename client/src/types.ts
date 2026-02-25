@@ -10,6 +10,10 @@ export interface Annotation {
   color: string;
   text_color: string;
   marker_size: number;
+  text_size: number;
+  font_weight: string;
+  font_style: string;
+  font_family: string;
   label_always_visible: boolean;
 }
 
